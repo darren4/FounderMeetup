@@ -1,12 +1,13 @@
 # models/database.py
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from dotenv import dotenv_values
 
-client = MongoClient("mongodb+srv://[USERNAME]:[PASSWORD]@[YOUR_HOST:PORT]/?retryWrites=true&w=majority", server_api=ServerApi('1'))
+client = MongoClient(dotenv_values(".env.MONGO_DB_CONNECTION_STRING"), server_api=ServerApi('1'))
 
 # Access a database from the client 
-db = client["YOUR_DATABASE_NAME"]
-user = db["COLLECTION_TO_ACCESS"] # Example Users
+db = client["FounderMeetup"]
+user = db["Users"] # Example Users
 
 # Define Class to use to map Mongodb Data for user login
 class User:
