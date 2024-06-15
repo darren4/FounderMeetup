@@ -10,7 +10,7 @@ from dotenv import dotenv_values
 # create an instance of the flask application
 app = Flask(__name__)
 
-app.secret_key = dotenv_values(".env.FLASK_SECRET_KEY")
+app.secret_key = dotenv_values(".env").get("FLASK_SECRET_KEY")
 app.register_blueprint(main_views)
 app.register_blueprint(auth_views)
 
