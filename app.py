@@ -1,6 +1,7 @@
 from flask import Flask
 from blueprints.main_blueprint import main_views
 from blueprints.auth_blueprint import auth_views
+from blueprints.professional_support_blueprint import professional_support_views
 
 from flask_login import LoginManager
 from models.database import db, user, User
@@ -13,6 +14,7 @@ app = Flask(__name__)
 app.secret_key = dotenv_values(".env").get("FLASK_SECRET_KEY")
 app.register_blueprint(main_views)
 app.register_blueprint(auth_views)
+app.register_blueprint(professional_support_views)
 
 login = LoginManager(app)
 login.login_view = "/login"
