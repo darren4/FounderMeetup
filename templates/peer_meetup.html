@@ -5,42 +5,54 @@
 	<h1 class="main-header">Welcome peer meetup</h1>
 	<p class="main-subtitle">Select the general times that work for you and click submit</p>
 
-    <table>
-        <tr>
-            <th></th> <!-- Empty header for the time labels column -->
-            <th>Sunday</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-        </tr>
-        <tr>
-            <td class="time-label">Morning</td>
-            <td><input type="checkbox" id="sunday-morning"></td>
-            <td><input type="checkbox" id="monday-morning"></td>
-            <td><input type="checkbox" id="tuesday-morning"></td>
-            <td><input type="checkbox" id="wednesday-morning"></td>
-            <td><input type="checkbox" id="thursday-morning"></td>
-            <td><input type="checkbox" id="friday-morning"></td>
-            <td><input type="checkbox" id="saturday-morning"></td>
-        </tr>
-        <tr>
-            <td class="time-label">Afternoon</td>
-            <td><input type="checkbox" id="sunday-afternoon"></td>
-            <td><input type="checkbox" id="monday-afternoon"></td>
-            <td><input type="checkbox" id="tuesday-afternoon"></td>
-            <td><input type="checkbox" id="wednesday-afternoon"></td>
-            <td><input type="checkbox" id="thursday-afternoon"></td>
-            <td><input type="checkbox" id="friday-afternoon"></td>
-            <td><input type="checkbox" id="saturday-afternoon"></td>
-        </tr>
-    </table>
+    <form action="/peermeetup" method="post" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <th></th> <!-- Empty header for the time labels column -->
+                <th>Sunday</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+            </tr>
+            <tr>
+                <td class="time-label">Morning</td>
+                <td><input type="checkbox" name="sunday-morning"></td>
+                <td><input type="checkbox" name="monday-morning"></td>
+                <td><input type="checkbox" name="tuesday-morning"></td>
+                <td><input type="checkbox" name="wednesday-morning"></td>
+                <td><input type="checkbox" name="thursday-morning"></td>
+                <td><input type="checkbox" name="friday-morning"></td>
+                <td><input type="checkbox" name="saturday-morning"></td>
+            </tr>
+            <tr>
+                <td class="time-label">Afternoon</td>
+                <td><input type="checkbox" name="sunday-afternoon"></td>
+                <td><input type="checkbox" name="monday-afternoon"></td>
+                <td><input type="checkbox" name="tuesday-afternoon"></td>
+                <td><input type="checkbox" name="wednesday-afternoon"></td>
+                <td><input type="checkbox" name="thursday-afternoon"></td>
+                <td><input type="checkbox" name="friday-afternoon"></td>
+                <td><input type="checkbox" name="saturday-afternoon"></td>
+            </tr>
+        </table>
 
-    <div class="submit-container">
-        <button type="button">Submit</button>
-    </div>
+        <button>Submit</button>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class=flashes>
+                {% for category, message in messages %}
+                    {% if loop.first %}
+                        <li class="{{ category }}" style="color: blue;">{{ message }}</li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            {% endif %}
+	    {% endwith %}
+    </form>
 </main>
 </html>
 

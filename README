@@ -1,4 +1,24 @@
-started off with this:
-https://dev.to/cre8stevedev/building-a-full-stack-web-application-using-flask-python-web-framework-part-two-1fc3
+First time run:
 
-flask run --port 5100 --debug
+1. Get .env directory from developer
+
+2. Contact developer to get IP address whitelisted with DB
+
+3. Create virtual enviornment
+    python3 -m venv env
+
+4. Activate virtual environment
+    source env/bin/activate
+
+5. Install requirements
+    pip install -r requirements.txt
+    
+6. Run application locally
+    flask run --port 5100 --debug
+
+7. Follow link in previous commands output to access application
+
+
+References:
+
+https://dev.to/cre8stevedev/building-a-full-stack-web-application-using-flask-python-web-framework-part-two-1fc3
