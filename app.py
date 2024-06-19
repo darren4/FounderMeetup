@@ -21,8 +21,9 @@ app.register_blueprint(peer_meetup_views)
 login = LoginManager(app)
 login.login_view = "/login"
 
+
 # setup the login user loader
-@login.user_loader #3
+@login.user_loader  # 3
 def load_user(id):
     """Confirm user exists in database then use else return None"""
     cur_user = user.find_one({"_id": ObjectId(id)})

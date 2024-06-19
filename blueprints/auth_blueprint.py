@@ -6,12 +6,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 auth_views = Blueprint("auth", __name__)
 
+
 # Create routes on this blueprint instance
 @auth_views.route("/register", strict_slashes=False, methods=["GET", "POST"])
 def register():
     # Define application logic for homepage
     if request.method == "POST":
-        uploaded_file = request.files['picture']
+        uploaded_file = request.files["picture"]
         username = request.form.get("username")
         email = request.form.get("email")
         password = request.form.get("password")
@@ -22,12 +23,12 @@ def register():
         # uploaded_file.save(f"/static/profile_pic/{uploaded_file.filename}")
 
         # Implement database logic to register user
-        # Create a dictionary of your user details to insert into the MongoDB Collection for a new User 
+        # Create a dictionary of your user details to insert into the MongoDB Collection for a new User
         new_user = {
             "username": username,
             "email": email,
             "password": generate_password_hash(password),
-            "profile_pic": f"/static/profile_pic/{uploaded_file.filename}"
+            "profile_pic": f"/static/profile_pic/{uploaded_file.filename}",
         }
         try:
             # Retrieve the user collection from database as defined in models/database.py
@@ -48,7 +49,7 @@ def register():
         except Exception as e:
             print(e)
             flash("Error occured during registration. Try again!", "error")
-            return redirect("/register"),
+            return (redirect("/register"),)
 
     # When it's a GET request we sent the html form
     return render_template("register.html")
@@ -58,8 +59,8 @@ def register():
 def login():
     # Define application logic for profile page
     # If a user alredy exists and tries to be funny by
-    # manually entering the /login route, they should be 
-    # redirected to the index page 
+    # manually entering the /login route, they should be
+    # redirected to the index page
     if current_user.is_authenticated:
         return redirect("/")
 
@@ -81,14 +82,16 @@ def login():
 
         # Compare the user's password with the password returned from db
 
-        is_valid_password = check_password_hash(find_user.get("password"), user_password)
+        is_valid_password = check_password_hash(
+            find_user.get("password"), user_password
+        )
 
         # If password does not match, redirect user to login again
         if not is_valid_password:
             flash("Invalid Login Credentials!", "error")
             return redirect("/login")
 
-        # At this point all is well; so instantiate the User class 
+        # At this point all is well; so instantiate the User class
         # This is to enable the Flask-Login Extension kick in
         log_user = User(find_user.get("username"), str(find_user.get("_id")))
 

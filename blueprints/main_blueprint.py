@@ -1,6 +1,8 @@
 from flask import Blueprint, request, render_template, send_from_directory
 from flask_login import login_required
+
 main_views = Blueprint("main", __name__)
+
 
 # Create routes on this blueprint instance
 @main_views.get("/", strict_slashes=False)
