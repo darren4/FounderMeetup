@@ -4,8 +4,6 @@ from pymongo.server_api import ServerApi
 from dotenv import dotenv_values
 
 
-
-
 client = MongoClient(
     dotenv_values(".env").get("MONGO_DB_CONNECTION_STRING"), server_api=ServerApi("1")
 )
