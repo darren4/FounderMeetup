@@ -11,6 +11,7 @@ client = MongoClient(
 # Access a database from the client
 db = client["FounderMeetup"]
 user = db["Users"]  # Example Users
+user_availability = db["UserAvailability"]
 
 
 # Define Class to use to map Mongodb Data for user login
