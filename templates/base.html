@@ -19,6 +19,7 @@
 				{% if current_user.is_authenticated %}
 					<a href="/profile/{{current_user.username}}"><li class="link">Profile</li></a>
 					<a href="/logout"><li class="link">Sign Out</li></a>
+					<a href="/deleteaccount"><li class="link">Delete Account</li></a>
 					<a href="/professionalsupport"><li class="link">Professional Support</li></a>
 					<a href="/peermeetup"><li class="link">Peer Meetup</li></a>
 				{% endif %}
@@ -32,6 +33,18 @@
 	<!--You can create multiple block contents that will be rendered when the 
 	template that extends this template with matching block name will 
 	rendered in the block place-->
+
+	{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+			<ul class=flashes>
+			{% for category, message in messages %}
+				{% if loop.first %}
+					<li class="{{ category }}" style="color: red;">{{ message }}</li>
+				{% endif %}
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
 
 	<footer class="footer-container">
 		<p class="footer-details">Happy Coding! Feel free to use this project as a boilerplate for your other projects</p>

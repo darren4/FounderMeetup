@@ -2,6 +2,7 @@
 from flask import Blueprint, request, render_template, redirect, flash
 from flask_login import login_required, logout_user, current_user, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from models.database import user, user_availability
 
 
 auth_views = Blueprint("auth", __name__)
@@ -31,9 +32,6 @@ def register():
             "profile_pic": f"/static/profile_pic/{uploaded_file.filename}",
         }
         try:
-            # Retrieve the user collection from database as defined in models/database.py
-            from models.database import user
-
             # Check if the email/username already exists in db
             check_email = user.find_one({"email": request.form.get("email")})
             check_username = user.find_one({"username": request.form.get("username")})
@@ -116,3 +114,25 @@ def logout():
     # So that only logged in users should be able to 'log out'
     logout_user()
     return redirect("/")
+
+
+@auth_views.route("/deleteaccount", strict_slashes=False, methods=["GET", "POST"])
+@login_required
+def delete_account():
+    if request.method == "POST":
+        username = request.form.get("username")
+
+        if username != current_user.username:
+            flash(
+                f"Username entered incorrectly, your username is {current_user.username}"
+            )
+        else:
+            user_id = user.find_one({"username": username})
+            user_availability.delete_many({"user_id": user_id})
+            user.delete_many({"username": username})
+
+            logout_user()
+            return redirect("/")
+
+    # When it's a GET request we sent the html form
+    return render_template("delete_account.html")

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+{% block css %}
+<link rel="stylesheet" href="{{url_for("static", filename="css/login.css")}}">
+{% endblock css %}
+
+
+{% block js %}
+<script src="{{url_for("static", filename="js/login.js")}}" defer></script>
+{% endblock js %}
+
+
+{% block body_content %}
+<main class="main-container">
+	<h1 class="main-header">Delete Account</h1>
+	<p class="main-subtitle">Enter your username and select Delete Account</p>
+
+	<form action="/deleteaccount" method="post">
+		<input type="text" name="username" id="username" required placeholder="Username"/>
+		<button>Delete Account</button>
+	</form>
+</main>
+{% endblock body_content %}

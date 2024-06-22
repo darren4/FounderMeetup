@@ -37,18 +37,23 @@ def peer_meetup():
             time for time in TIMES if request.form.get(time) == "on"
         ]
         ready_times_regex: str = "|".join(ready_times)
-        match: Any = user_availability.find_one_and_delete({"ready_times": {"$regex": ready_times_regex}})
-        
+        match: Any = user_availability.find_one_and_delete(
+            {"ready_times": {"$regex": ready_times_regex}}
+        )
+
         if match:
             matched_user_id: str = match["user_id"]
-            matched_user_profile: Any = user.find_one({"_id": ObjectId(matched_user_id)})
-            
+            matched_user_profile: Any = user.find_one(
+                {"_id": ObjectId(matched_user_id)}
+            )
+
             matched_user_email: str = matched_user_profile["email"]
             flash(f"Matched with user with email {matched_user_email}")
             # TODO: send emails
         else:
-            user_availability.insert_one({"user_id": current_user_id, "ready_times": ready_times_regex})
+            user_availability.insert_one(
+                {"user_id": current_user_id, "ready_times": ready_times_regex}
+            )
             flash("Times submitted, we will email when we find a match", "info")
-
 
     return render_template("peer_meetup.html")
