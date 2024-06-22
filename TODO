@@ -1,5 +1,7 @@
-- Pair users
 - Send email
 - add delete account
-- add SRE
+- add sign in with google
+- clean up code
+- add tests
+- deploy?
 - figure out scaling

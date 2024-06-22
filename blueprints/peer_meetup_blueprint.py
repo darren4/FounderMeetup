@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash
 from flask_login import login_required, current_user
 from models.database import user_availability, user
 from typing import List, Final, Set, Dict, Any
+from bson.objectid import ObjectId
 
 
 peer_meetup_views = Blueprint("peer_meetup", __name__)
@@ -40,10 +41,11 @@ def peer_meetup():
         
         if match:
             matched_user_id: str = match["user_id"]
-            matched_user_profile: Any = user.find_one({"_id": matched_user_id})
+            matched_user_profile: Any = user.find_one({"_id": ObjectId(matched_user_id)})
             
             matched_user_email: str = matched_user_profile["email"]
             flash(f"Matched with user with email {matched_user_email}")
+            # TODO: send emails
         else:
             user_availability.insert_one({"user_id": current_user_id, "ready_times": ready_times_regex})
             flash("Times submitted, we will email when we find a match", "info")

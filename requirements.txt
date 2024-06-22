@@ -1,5 +1,6 @@
 black==24.4.2
 flask==3.0.3
 flask-login==0.6.3
+flask-mail==0.10.0
 pymongo==4.7.3
 python-dotenv==1.0.1
