@@ -5,14 +5,15 @@ from blueprints.professional_support_blueprint import professional_support_views
 from blueprints.peer_meetup_blueprint import peer_meetup_views
 
 from flask_login import LoginManager
-from models.database import db, user, User
+from models.database import user, User
 from bson import ObjectId
 from dotenv import dotenv_values
+import os
 
 # create an instance of the flask application
 app = Flask(__name__)
 
-app.secret_key = dotenv_values(".env").get("FLASK_SECRET_KEY")
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 app.register_blueprint(main_views)
 app.register_blueprint(auth_views)
 app.register_blueprint(professional_support_views)

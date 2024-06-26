@@ -3,9 +3,11 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import dotenv_values
 
+import os
+
 
 client = MongoClient(
-    dotenv_values(".env").get("MONGO_DB_CONNECTION_STRING"), server_api=ServerApi("1")
+    os.getenv("MONGO_DB_CONNECTION_STRING"), server_api=ServerApi("1")
 )
 
 # Access a database from the client
