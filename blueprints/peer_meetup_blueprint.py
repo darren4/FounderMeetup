@@ -30,8 +30,8 @@ TIMES: Final[List[str]] = [
 @login_required
 def peer_meetup():
     if request.method == "POST":
-        current_user_id: str = current_user.id
-        user_availability.delete_many({"user_id": current_user_id})
+        current_username: str = current_user.username
+        user_availability.document(current_username).delete()
 
         ready_times: List[str] = [
             time for time in TIMES if request.form.get(time) == "on"

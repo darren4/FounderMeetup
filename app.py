@@ -25,12 +25,13 @@ login.login_view = "/login"
 
 # setup the login user loader
 @login.user_loader  # 3
-def load_user(id):
+def load_user(username):
     """Confirm user exists in database then use else return None"""
-    cur_user = user.find_one({"_id": ObjectId(id)})
+    cur_user_ref = user.document(username)
+    cur_user = cur_user_ref.get()
 
-    if cur_user is None:
+    if not cur_user.exists:
         return None
 
     # Create a user instance from the retrieved user
-    return User(cur_user.get("username"), str(cur_user.get("_id")))
+    return User(cur_user.get("username"))

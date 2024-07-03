@@ -1,28 +1,32 @@
 # models/database.py
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
-from dotenv import dotenv_values
+import firebase_admin
+from firebase_admin import firestore
 
 import os
 
 
-client = MongoClient(
-    os.getenv("MONGO_DB_CONNECTION_STRING"), server_api=ServerApi("1")
-)
+env = os.getenv("ENV")
 
-# Access a database from the client
-db = client["FounderMeetup"]
-user = db["Users"]  # Example Users
-user_availability = db["UserAvailability"]
+if env == "LOCAL":
+    os.environ["FIRESTORE_DATASET"] = "test"
+    os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8001"
+    os.environ["FIRESTORE_EMULATOR_HOST_PATH"] = "localhost:8001/firestore"
+    os.environ["FIRESTORE_HOST"] = "http://localhost:8001"
+    os.environ["FIRESTORE_PROJECT_ID"] = "test"
+
+app = firebase_admin.initialize_app()
+db = firestore.client()
+
+user = db.collection("Users")
+user_availability = db.collection("UserAvailability")
 
 
 # Define Class to use to map Mongodb Data for user login
 class User:
     """Class Definition to handle Flask login for user"""
 
-    def __init__(self, username, id):
+    def __init__(self, username):
         self.username = username
-        self.id = id
 
     @staticmethod
     def is_authenticated():
@@ -35,6 +39,3 @@ class User:
     @staticmethod
     def is_anonymous():
         return False
-
-    def get_id(self):
-        return self.id
