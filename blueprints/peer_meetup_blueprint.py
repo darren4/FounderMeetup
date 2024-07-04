@@ -3,6 +3,9 @@ from flask_login import login_required, current_user
 from models.database import user_availability, user
 from typing import List, Final, Set, Dict, Any
 from bson.objectid import ObjectId
+from google.cloud.firestore_v1.base_query import FieldFilter
+from enum import Enum
+from firebase_admin import firestore
 
 
 peer_meetup_views = Blueprint("peer_meetup", __name__)
@@ -26,6 +29,11 @@ TIMES: Final[List[str]] = [
 ]
 
 
+class UserAvailabilityFields(Enum):
+    AVAILABILITIES = "availabilities"
+    UPDATE_TIME = "update_time"
+
+
 @peer_meetup_views.route("/peermeetup", strict_slashes=False, methods=["GET", "POST"])
 @login_required
 def peer_meetup():
@@ -33,27 +41,29 @@ def peer_meetup():
         current_username: str = current_user.username
         user_availability.document(current_username).delete()
 
-        ready_times: List[str] = [
+        availability: List[str] = [
             time for time in TIMES if request.form.get(time) == "on"
         ]
-        ready_times_regex: str = "|".join(ready_times)
-        match: Any = user_availability.find_one_and_delete(
-            {"ready_times": {"$regex": ready_times_regex}}
-        )
-
-        if match:
-            matched_user_id: str = match["user_id"]
-            matched_user_profile: Any = user.find_one(
-                {"_id": ObjectId(matched_user_id)}
+        matches = user_availability.where(
+            filter=FieldFilter(
+                UserAvailabilityFields.AVAILABILITIES.value,
+                "array_contains_any",
+                availability,
             )
+        ).order_by(UserAvailabilityFields.UPDATE_TIME.value).limit(1).get()
 
-            matched_user_email: str = matched_user_profile["email"]
-            flash(f"Matched with user with email {matched_user_email}")
+        if matches:
+            match = matches[0]
+            match.reference.delete()
+            matched_username = match.id
+            matched_email = user.document(matched_username).get().get("email")
+            flash(f"Matched with user with email {matched_email}")
             # TODO: send emails
         else:
-            user_availability.insert_one(
-                {"user_id": current_user_id, "ready_times": ready_times_regex}
-            )
-            flash("Times submitted, we will email when we find a match", "info")
+            user_availability.document(current_username).set({
+                UserAvailabilityFields.UPDATE_TIME.value: firestore.SERVER_TIMESTAMP,
+                UserAvailabilityFields.AVAILABILITIES.value: availability
+            })
+            flash("Times submitted", "info")
 
     return render_template("peer_meetup.html")

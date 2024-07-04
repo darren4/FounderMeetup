@@ -34,4 +34,8 @@ def load_user(username):
         return None
 
     # Create a user instance from the retrieved user
-    return User(cur_user.get("username"))
+    return User(username)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

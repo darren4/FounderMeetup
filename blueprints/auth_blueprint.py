@@ -3,6 +3,7 @@ from flask import Blueprint, request, render_template, redirect, flash
 from flask_login import login_required, logout_user, current_user, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.database import user, user_availability
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 
 auth_views = Blueprint("auth", __name__)
@@ -13,34 +14,33 @@ auth_views = Blueprint("auth", __name__)
 def register():
     # Define application logic for homepage
     if request.method == "POST":
-        uploaded_file = request.files["picture"]
         username = request.form.get("username")
         email = request.form.get("email")
         password = request.form.get("password")
 
-        # Save the uploaded file to a directory on your server
-        # Preferably in a folder you define in your app directory
-        # example in static/profile_pic/
-        # uploaded_file.save(f"/static/profile_pic/{uploaded_file.filename}")
-
-        # Implement database logic to register user
-        # Create a dictionary of your user details to insert into the MongoDB Collection for a new User
         new_user = {
-            "username": username,
             "email": email,
             "password": generate_password_hash(password),
-            "profile_pic": f"/static/profile_pic/{uploaded_file.filename}",
         }
         try:
             # Check if the email/username already exists in db
-            check_email = user.find_one({"email": request.form.get("email")})
-            check_username = user.find_one({"username": request.form.get("username")})
-
-            if check_email or check_username:
-                flash("Credentials Already in use!", "error")
+            existing_user = user.document(username).get()
+            if existing_user.exists:
+                flash("Username already in use", "error")
                 return redirect("/register")
 
-            new_user = user.insert_one(new_user)
+            existing_with_email = user.where(
+                filter=FieldFilter(
+                    "email",
+                    "==",
+                    email
+                )
+            ).get()
+            if existing_with_email:
+                flash("Email already in use", "error")
+                return redirect("/register")
+
+            user.document(username).set(new_user)
             return redirect("/login")
 
         # If any error occurs, we can catch it
@@ -71,10 +71,10 @@ def login():
         user_password = request.form.get("password")
 
         # Retrieve user from the database with username
-        find_user = user.find_one({"username": username})
+        find_user = user.document(username).get()
 
         # Return an error if user not in database
-        if find_user == None:
+        if not find_user.exists:
             flash("Invalid Login Credentials!", "error")
             return redirect("/login")
 
@@ -91,7 +91,7 @@ def login():
 
         # At this point all is well; so instantiate the User class
         # This is to enable the Flask-Login Extension kick in
-        log_user = User(find_user.get("username"), str(find_user.get("_id")))
+        log_user = User(username)
 
         # use the login_user function imported from flask_login
         login_user(log_user)
@@ -127,9 +127,8 @@ def delete_account():
                 f"Username entered incorrectly, your username is {current_user.username}"
             )
         else:
-            user_id = user.find_one({"username": username})
-            user_availability.delete_many({"user_id": user_id})
-            user.delete_many({"username": username})
+            user_availability.document(username).delete()
+            user.document(username).delete()
 
             logout_user()
             return redirect("/")
