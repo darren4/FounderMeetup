@@ -1,7 +1,7 @@
 black==24.4.2
+flake8==7.1.0
 flask==3.0.3
 flask-login==0.6.3
 firebase-admin==6.5.0
-pymongo==4.7.3
-python-dotenv==1.0.1
+pydantic==2.8.2
 waitress==3.0.0
